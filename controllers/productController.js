@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Products = require("../models/productModels");
-// const productData = require("../productData.json");
 
+// Get all products with query parameters, sorting, and pagination
 const getAllProducts = asyncHandler(async (req, res) => {
   const queryObject = {};
 
@@ -81,20 +81,17 @@ const getAllProducts = asyncHandler(async (req, res) => {
   });
 });
 
+// Get a single product by ID
 const getProduct = asyncHandler(async (req, res) => {
   const product = await Products.findById(req.params.id);
   if (!product) {
-    res.status(404);
-    throw new Error("Product not found");
+    res.status(404).json({ Error: "Product not found" });
+  } else {
+    res.status(200).json(product);
   }
-  res.status(200).json(product);
 });
 
-// const addProducts = asyncHandler(async (req, res) => {
-//   const product = await Products.create(productData);
-//   res.status(200).json(product);
-// });
-
+// Add a new product (Admin only)
 const postProduct = asyncHandler(async (req, res) => {
   const {
     category,
@@ -129,6 +126,12 @@ const postProduct = asyncHandler(async (req, res) => {
     throw new Error("All fields are mandatory!");
   }
 
+  const productExists = await Products.findOne({ category, name, company });
+  if (productExists) {
+    res.status(400);
+    throw new Error("Product already exists!!!");
+  }
+
   const product = await Products.create({
     category,
     company,
@@ -144,12 +147,71 @@ const postProduct = asyncHandler(async (req, res) => {
     warranty,
   });
 
-  res.status(201).json(product);
+  res.status(201).json({ message: "Product added successfully", product });
+});
+
+// Update a product by ID (Admin and Manager roles)
+const putProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {
+    category,
+    company,
+    name,
+    description,
+    featured,
+    price,
+    rating,
+    stock,
+    discount,
+    release_date,
+    color,
+    warranty,
+  } = req.body;
+
+  const product = await Products.findByIdAndUpdate(
+    id,
+    {
+      category,
+      company,
+      name,
+      description,
+      featured,
+      price,
+      rating,
+      stock,
+      discount,
+      release_date,
+      color,
+      warranty,
+    },
+    { new: true, runValidators: true }
+  );
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  res.status(200).json(product);
+});
+
+// Delete a product by ID (Admin only)
+const deleteProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const product = await Products.findByIdAndDelete(id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  res.status(200).json({ message: "Product deleted successfully" });
 });
 
 module.exports = {
   getAllProducts,
   getProduct,
   postProduct,
-  // addProducts,
+  putProduct,
+  deleteProduct,
 };
