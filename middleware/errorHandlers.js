@@ -1,10 +1,9 @@
+// middleware/errorHandlers.js
 const constant = require("../constants");
 
 const errorHandler = (err, req, res, next) => {
-  // Log the error to the console (or a logging service)
   console.error(err);
 
-  // Use the status code from the error if available
   const statusCode = err.statusCode || res.statusCode || 500;
 
   switch (statusCode) {
