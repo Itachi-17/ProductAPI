@@ -85,10 +85,10 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const getProduct = asyncHandler(async (req, res) => {
   const product = await Products.findById(req.params.id);
   if (!product) {
-    res.status(404).json({ Error: "Product not found" });
-  } else {
-    res.status(200).json(product);
+    res.status(404);
+    throw new Error("Product not found");
   }
+  res.status(200).json(product);
 });
 
 // Add a new product (Admin only)
