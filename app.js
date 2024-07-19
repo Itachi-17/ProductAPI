@@ -1,4 +1,3 @@
-// app.js
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -7,9 +6,9 @@ const productRoute = require(path.join(__dirname, "routes/productRoutes.js"));
 const authRoute = require(path.join(__dirname, "routes/authRoutes.js"));
 const connectDB = require("./config/dbConnection");
 const authenticateToken = require("./middleware/authenticateToken");
-const errorHandler = require("./middleware/errorHandlers");
+const errorHandler = require("./middleware/errorHandlers"); // Corrected to 'errorHandler'
 
-const port = 1717;
+const port = process.env.PORT || 1717;
 
 connectDB();
 app.use(express.json());
