@@ -1,8 +1,11 @@
-// middleware/errorHandler.js
 const constant = require("../constants");
 
 const errorHandler = (err, req, res, next) => {
-  const statusCode = res.statusCode || 500;
+  // Log the error to the console (or a logging service)
+  console.error(err);
+
+  // Use the status code from the error if available
+  const statusCode = err.statusCode || res.statusCode || 500;
 
   switch (statusCode) {
     case constant.VALIDATION_ERROR:
