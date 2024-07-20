@@ -6,14 +6,15 @@ const productRoute = require("./routes/productRoutes.js");
 const authRoute = require("./routes/authRoutes.js");
 const authenticateToken = require("./middleware/authenticateToken.js");
 const errorHandler = require("./middleware/errorHandlers.js");
+const cors = require("cors");
 
 console.log("Starting application...");
 
-const app = express();
-
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, ".env") });
-console.log("Environment variables loaded");
+// dotenv.config({ path: path.join(__dirname, ".env") });
+// console.log("Environment variables loaded");
+
+const app = express();
 
 // Connect to the database
 connectDB().catch((err) => {
@@ -22,8 +23,15 @@ connectDB().catch((err) => {
 });
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 // Routes
 app.get("/", (req, res) => {
@@ -31,8 +39,17 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 app.use("/api/auth", authRoute);
 app.use("/api/products", authenticateToken, productRoute);
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).send("Not Found");
+});
 
 // Global error handler
 app.use(errorHandler);
