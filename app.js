@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const dotenv = require("dotenv");
-const connectDB = require("./config/dbConnection.js");
+const connectDB = require(path.join(__dirname, "dbConnection.js"));
 const productRoute = require("./routes/productRoutes.js");
 const authRoute = require("./routes/authRoutes.js");
 const authenticateToken = require("./middleware/authenticateToken.js");
