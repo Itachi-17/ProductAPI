@@ -46,11 +46,6 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/products", authenticateToken, productRoute);
 
-// 404 handler
-app.use((req, res, next) => {
-  res.status(404).send("Not Found");
-});
-
 // Global error handler
 app.use(errorHandler);
 
